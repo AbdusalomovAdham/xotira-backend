@@ -44,11 +44,25 @@ func main() {
 	//middleware
 	//authMiddleware := auth_middleware.NewMiddleware(authService)
 
-	//auth
-	r.POST("/sign-in", userController.SignIn)
-	r.POST("/sign-up", userController.SignUp)
-	r.POST("/forgot-psw", userController.ForgotPsw)
-	r.POST("/check-code", userController.CheckCode)
-	r.PATCH("/update-psw", userController.UpdatePsw)
+	api := r.Group("/api")
+
+	{
+		v1 := api.Group("/v1")
+
+		// #auth
+
+		//sign-in
+		v1.POST("/sign-in", userController.SignIn)
+		//sign-up
+		v1.POST("/sign-up", userController.SignUp)
+		//forgot-psw
+		v1.POST("/forgot-psw", userController.ForgotPsw)
+		//check-code
+		v1.POST("/check-code", userController.CheckCode)
+		//update-password
+		v1.PATCH("/update-psw", userController.UpdatePsw)
+	}
+
 	r.Run(serverPost)
+
 }
