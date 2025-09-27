@@ -93,7 +93,7 @@ func (as Controller) UpdatePsw(c *gin.Context) {
 		return
 	}
 	ctx := context.Background()
-	err = as.useCase.ResetPsw(ctx, data)
+	err = as.useCase.UpdatePsw(ctx, data)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return

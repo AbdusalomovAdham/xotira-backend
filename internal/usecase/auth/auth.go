@@ -94,7 +94,7 @@ func (au UseCase) CheckCode(ctx context.Context, code, token string) error {
 	return nil
 }
 
-func (au UseCase) ResetPsw(ctx context.Context, data auth.UpdatePsw) error {
+func (au UseCase) UpdatePsw(ctx context.Context, data auth.UpdatePsw) error {
 	var resetData auth.ResetData
 
 	if err := au.cache.Get(ctx, data.Token, &resetData); err != nil {
@@ -112,5 +112,8 @@ func (au UseCase) ResetPsw(ctx context.Context, data auth.UpdatePsw) error {
 		return err
 	}
 	return nil
+}
+
+func (au UseCase) R() {
 
 }
