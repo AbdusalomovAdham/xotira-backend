@@ -100,3 +100,20 @@ func (as Controller) UpdatePsw(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "password update"})
 }
+
+func (as Controller) ResendCode(c *gin.Context) {
+	var data auth_service.ResendCode
+
+	if err := c.BindJSON(&data); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+
+	ctx := context.Background()
+	if err := as.useCase.ResendCode(ctx, data.Token); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "code resend"})
+}

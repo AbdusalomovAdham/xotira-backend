@@ -114,6 +114,24 @@ func (au UseCase) UpdatePsw(ctx context.Context, data auth.UpdatePsw) error {
 	return nil
 }
 
-func (au UseCase) R() {
+func (au UseCase) ResendCode(ctx context.Context, token string) error {
+	var resetData auth.ResetData
 
+	if err := au.cache.Get(ctx, token, &resetData); err != nil {
+		return err
+	}
+	fmt.Println("resetData.Code", resetData.Code)
+	code := au.email.GenerateCode(6)
+
+	err := au.email.SendMailSimple("Password Reset Code", "Your reset code is: "+code, []string{resetData.Email})
+	if err != nil {
+		return err
+	}
+	resetData.Code = code
+	fmt.Println("resetData", resetData.Code)
+	if err := au.cache.Set(ctx, token, resetData); err != nil {
+		return err
+	}
+	fmt.Println()
+	return nil
 }

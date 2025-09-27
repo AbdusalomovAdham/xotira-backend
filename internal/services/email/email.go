@@ -2,6 +2,7 @@ package email
 
 import (
 	"fmt"
+	"main/internal/pkg/config"
 	"math/rand"
 	"net/smtp"
 )
@@ -13,8 +14,8 @@ func NewEmailSeervice() *EmailService { return &EmailService{} }
 func (es EmailService) SendMailSimple(subject, body string, to []string) error {
 	auth := smtp.PlainAuth(
 		"",
-		"abdusalomov.adhmabek@gmail.com",
-		"qsftjewoparywvsa",
+		config.GetConfig().SenderEmail,
+		config.GetConfig().AppPassword,
 		"smtp.gmail.com",
 	)
 	msg := "Subject" + subject + "\n" + body

@@ -5,16 +5,16 @@ import (
 )
 
 type SignIn struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Email    string `json:"email" binding:"required"`
+	Password string `json:"password" binding:"required,min=8"`
 }
 
 type SignUp struct {
-	FullName string `json:"full_name"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
-	Region   string `json:"region"`
-	City     string `json:"city"`
+	FullName string `json:"full_name" binding:"required"`
+	Email    string `json:"email" binding:"required"`
+	Password string `json:"password" binding:"required,min=8"`
+	Region   string `json:"region" binding:"required"`
+	City     string `json:"city" binding:"required"`
 }
 
 type ForgotPsw struct {
@@ -38,6 +38,10 @@ type ResetData struct {
 type UpdatePsw struct {
 	Token    string
 	Password string
+}
+
+type ResendCode struct {
+	Token string
 }
 
 type Claims struct {

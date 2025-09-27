@@ -15,6 +15,8 @@ type Config struct {
 	RedisHost    string `yaml:"redis_host"`
 	RedisDB      int    `yaml:"redis_db"`
 	RedisExpires int    `yaml:"redis_expires"`
+	SenderEmail  string `yaml:"sender_email"`
+	AppPassword  string `yaml:"app_password"`
 }
 
 func GetConfig() *Config {
