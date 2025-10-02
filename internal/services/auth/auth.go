@@ -7,6 +7,7 @@ import (
 	"main/internal/entity"
 	"main/internal/pkg/config"
 	"math/rand"
+	"strings"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -28,6 +29,7 @@ func (as *Service) GenerateToken(ctx context.Context, data GenerateToken) (strin
 	claims["exp"] = time.Now().Add(12 * time.Hour).Unix()
 	claims["email"] = data.Email
 	claims["role"] = data.Role
+	claims["id"] = data.Id
 
 	tokenStr, err := token.SignedString([]byte(config.GetConfig().JWTKey))
 	if err != nil {
@@ -38,8 +40,8 @@ func (as *Service) GenerateToken(ctx context.Context, data GenerateToken) (strin
 
 func (as *Service) IsValidToken(ctx context.Context, tokenStr string) (entity.User, error) {
 	claims := new(Claims)
-
-	tkn, err := jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (any, error) {
+	token := strings.TrimPrefix(tokenStr, "Bearer ")
+	tkn, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (any, error) {
 		return []byte(config.GetConfig().JWTKey), nil
 	})
 

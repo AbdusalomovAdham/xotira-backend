@@ -5,22 +5,24 @@ import (
 )
 
 type SignIn struct {
-	Email    string `json:"email" binding:"required"`
-	Password string `json:"password" binding:"required,min=8"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }
 
 type SignUp struct {
-	FullName string `json:"full_name" binding:"required"`
-	Email    string `json:"email" binding:"required"`
-	Password string `json:"password" binding:"required,min=8"`
-	Region   string `json:"region" binding:"required"`
-	City     string `json:"city" binding:"required"`
+	FullName   string  `json:"full_name"`
+	Email      string  `json:"email" `
+	Password   string  `json:"password" `
+	RegionId   int     `json:"region_id"`
+	DistrictId int     `json:"district_id"`
+	Avatar     *string `json:"avatar"`
 }
 
 type ForgotPsw struct {
 	Email string
 }
 type GenerateToken struct {
+	Id    int
 	Email string
 	Role  int
 }

@@ -70,7 +70,7 @@ func (ac Controller) ForgotPsw(c *gin.Context) {
 
 func (as Controller) CheckCode(c *gin.Context) {
 	var data auth_service.CheckCode
-	err := c.BindJSON(&data)
+	err := c.ShouldBind(&data)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return

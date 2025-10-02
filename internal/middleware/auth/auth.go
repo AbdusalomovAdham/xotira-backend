@@ -15,7 +15,7 @@ func NewMiddleware(auth Auth) *Middleware {
 	return &Middleware{auth: auth}
 }
 
-func (am Middleware) AuthMiddleware() gin.HandlerFunc {
+func (am *Middleware) AuthMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		authHeader := ctx.GetHeader("authorization")
 

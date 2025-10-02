@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"main/internal/services/auth"
+	"main/internal/services/user"
 )
 
 type UseCase struct {
@@ -25,9 +26,10 @@ func (au UseCase) SignIn(ctx context.Context, data auth.SignIn) (string, error) 
 	}
 	isValidPassword := au.auth.CheckPasswordHash(data.Password, *userDetail.Password)
 	if !isValidPassword {
-		return "", errors.New("invalid password")
+		return "", errors.New("password error")
 	}
 	var generateTokenData auth.GenerateToken
+	generateTokenData.Id = userDetail.Id
 	generateTokenData.Email = userDetail.Email
 	generateTokenData.Role = userDetail.Role
 	token, err := au.auth.GenerateToken(ctx, generateTokenData)
@@ -35,22 +37,35 @@ func (au UseCase) SignIn(ctx context.Context, data auth.SignIn) (string, error) 
 }
 
 func (au UseCase) SignUp(ctx context.Context, data auth.SignUp) (string, error) {
+	var detail user.Create
+
 	hashPassword, err := au.auth.HashPassword(data.Password)
 	if err != nil {
 		return "", err
 	}
+
+	detail.FullName = data.FullName
+	detail.Email = data.Email
+	detail.RegionId = data.RegionId
+	detail.DistrictId = data.DistrictId
+
 	_, err = au.user.GetByEmail(ctx, data.Email)
 	if err == nil {
 		return "", errors.New("email already taken")
 	}
-	data.Password = hashPassword
-	detail, err := au.user.Create(ctx, data)
+
+	detail.Password = hashPassword
+
+	detailUser, err := au.user.Create(ctx, detail)
 	if err != nil {
 		return "", err
 	}
+
 	var generateTokenData auth.GenerateToken
-	generateTokenData.Email = detail.Email
-	generateTokenData.Role = detail.Role
+	generateTokenData.Id = detailUser.Id
+	generateTokenData.Email = detailUser.Email
+	generateTokenData.Role = detailUser.Role
+
 	token, err := au.auth.GenerateToken(ctx, generateTokenData)
 	if err != nil {
 		return "", err

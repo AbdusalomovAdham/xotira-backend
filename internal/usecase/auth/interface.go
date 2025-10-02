@@ -4,6 +4,7 @@ import (
 	"context"
 	"main/internal/entity"
 	"main/internal/services/auth"
+	"main/internal/services/user"
 	//"main/internal/services/email"
 )
 
@@ -17,7 +18,7 @@ type Auth interface {
 
 type User interface {
 	GetByEmail(ctx context.Context, email string) (entity.User, error)
-	Create(ctx context.Context, data auth.SignUp) (entity.User, error)
+	Create(ctx context.Context, data user.Create) (entity.User, error)
 	UpdatePassword(ctx context.Context, email, password string) error
 }
 
