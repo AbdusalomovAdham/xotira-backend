@@ -9,7 +9,7 @@ import (
 
 type EmailService struct{}
 
-func NewEmailSeervice() *EmailService { return &EmailService{} }
+func NewEmailService() *EmailService { return &EmailService{} }
 
 func (es EmailService) SendMailSimple(subject, body string, to []string) error {
 	auth := smtp.PlainAuth(

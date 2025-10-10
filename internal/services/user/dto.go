@@ -1,6 +1,8 @@
 package user
 
-import "time"
+import (
+	"time"
+)
 
 type Create struct {
 	FullName   string `form:"full_name"`
@@ -33,4 +35,21 @@ type Filter struct {
 	Offset *int
 	Role   *int
 	Status *bool
+}
+
+type UserWithLocation struct {
+	FullName     string `json:"full_name"`
+	RegionName   string `json:"region_name"`
+	DistrictName string `json:"district_name"`
+	Email        string `json:"email"`
+	Avatar       string `json:"avatar"`
+	Role         int    `json:"role"`
+}
+
+type UpdateCabinet struct {
+	Fullname   *string `json:"full_name" form:"full_name"`
+	Email      *string `json:"email" form:"email"`
+	RegionId   *int    `json:"region_id" form:"region_id"`
+	DistrictId *int    `json:"district_id" form:"district_id"`
+	Avatar     *string
 }

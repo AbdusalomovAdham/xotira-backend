@@ -3,7 +3,6 @@ package auth
 import (
 	"context"
 	"errors"
-	"fmt"
 	"main/internal/services/auth"
 	"main/internal/services/user"
 )
@@ -30,7 +29,6 @@ func (au UseCase) SignIn(ctx context.Context, data auth.SignIn) (string, error) 
 	}
 	var generateTokenData auth.GenerateToken
 	generateTokenData.Id = userDetail.Id
-	generateTokenData.Email = userDetail.Email
 	generateTokenData.Role = userDetail.Role
 	token, err := au.auth.GenerateToken(ctx, generateTokenData)
 	return token, err
@@ -63,7 +61,6 @@ func (au UseCase) SignUp(ctx context.Context, data auth.SignUp) (string, error) 
 
 	var generateTokenData auth.GenerateToken
 	generateTokenData.Id = detailUser.Id
-	generateTokenData.Email = detailUser.Email
 	generateTokenData.Role = detailUser.Role
 
 	token, err := au.auth.GenerateToken(ctx, generateTokenData)
@@ -102,7 +99,6 @@ func (au UseCase) CheckCode(ctx context.Context, code, token string) error {
 	if err := au.cache.Get(ctx, token, &data); err != nil {
 		return err
 	}
-	fmt.Println("data", data.Code != code)
 	if code != data.Code {
 		return errors.New("code error")
 	}
@@ -135,7 +131,6 @@ func (au UseCase) ResendCode(ctx context.Context, token string) error {
 	if err := au.cache.Get(ctx, token, &resetData); err != nil {
 		return err
 	}
-	fmt.Println("resetData.Code", resetData.Code)
 	code := au.email.GenerateCode(6)
 
 	err := au.email.SendMailSimple("Password Reset Code", "Your reset code is: "+code, []string{resetData.Email})
@@ -143,10 +138,8 @@ func (au UseCase) ResendCode(ctx context.Context, token string) error {
 		return err
 	}
 	resetData.Code = code
-	fmt.Println("resetData", resetData.Code)
 	if err := au.cache.Set(ctx, token, resetData); err != nil {
 		return err
 	}
-	fmt.Println()
 	return nil
 }

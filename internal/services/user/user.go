@@ -3,7 +3,6 @@ package user
 import (
 	"context"
 	"errors"
-	"fmt"
 	"main/internal/entity"
 )
 
@@ -24,7 +23,6 @@ func (s Service) Create(ctx context.Context, data Create) (entity.User, error) {
 		return entity.User{}, errors.New("role is required")
 	}
 	if data.FullName == "" {
-		fmt.Println("data.FullName", data)
 		return entity.User{}, errors.New("full name is required")
 	}
 	return s.repo.Create(ctx, data)
@@ -52,4 +50,12 @@ func (s Service) Update(ctx context.Context, data Update, created_by int) (entit
 
 func (s Service) Delete(ctx context.Context, id int) error {
 	return s.repo.Delete(ctx, id)
+}
+
+func (s Service) GetByEmailWithLocation(ctx context.Context, id int, lang string) (UserWithLocation, error) {
+	return s.repo.GetByEmailWithLocation(ctx, id, lang)
+}
+
+func (s Service) UpdateCabinet(ctx context.Context, data UpdateCabinet, id int) (entity.User, error) {
+	return s.repo.UpdateCabinet(ctx, data, id)
 }

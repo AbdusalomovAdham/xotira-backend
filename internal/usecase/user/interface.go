@@ -14,6 +14,8 @@ type User interface {
 	GetAll(ctx context.Context, filer user.Filter, order string) ([]entity.User, int, error)
 	GetById(ctx context.Context, id int) (entity.User, error)
 	Delete(ctx context.Context, id int) error
+	GetByEmailWithLocation(ctx context.Context, id int, lang string) (user.UserWithLocation, error)
+	UpdateCabinet(ctx context.Context, data user.UpdateCabinet, id int) (entity.User, error)
 }
 
 type Auth interface {

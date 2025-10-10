@@ -22,6 +22,8 @@ type User struct {
 	CreatedAt  time.Time `json:"created_at" bun:"created_at"`
 	UpdatedBy  int       `json:"updated_by" bun:"updated_by,default:null"`
 	UpdatedAt  time.Time `json:"updated_at" bun:"updated_at,default:null"`
+
+	Region *Region `bun:"rel:belongs-to,join:region_id=id"`
 }
 
 //Role

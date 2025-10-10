@@ -3,7 +3,6 @@ package user
 import (
 	"context"
 	"errors"
-	"fmt"
 	"main/internal/entity"
 	"main/internal/services/user"
 	"mime/multipart"
@@ -24,7 +23,6 @@ func (uc UseCase) AdminCreateUser(ctx context.Context, data user.Create, authHea
 
 	tokenDetail, err := uc.auth.IsValidToken(ctx, authHeader)
 	if err != nil {
-		fmt.Println("err", err)
 		return entity.User{}, err
 	}
 
@@ -61,46 +59,6 @@ func (uc UseCase) AdminGetUserDetail(ctx context.Context, id int) (entity.User, 
 	return detail, nil
 }
 
-func (uc UseCase) AdminUpdateUser(ctx context.Context, data user.Update, avatarUpdated bool, authHeader string) (entity.User, error) {
-	oldUser, err := uc.user.GetById(ctx, *data.Id)
-	if err != nil {
-		return entity.User{}, err
-	}
-
-	tokenDetail, err := uc.auth.IsValidToken(ctx, authHeader)
-	if err != nil {
-		fmt.Println("err", err)
-		return entity.User{}, err
-	}
-
-	if avatarUpdated && oldUser.Avatar != "" {
-		if err := uc.file.Delete(ctx, oldUser.Avatar); err != nil {
-			return entity.User{}, err
-		}
-	}
-
-	if data.Password != nil {
-		hashedPassword, err := uc.auth.HashPassword(*data.Password)
-		if err != nil {
-			return entity.User{}, err
-		}
-		data.Password = &hashedPassword
-	}
-
-	fmt.Printf("token id: %+v\n")
-	data.UpdatedAt = time.Now()
-
-	detail, err := uc.user.Update(ctx, data, tokenDetail.Id)
-
-	if err != nil {
-		return entity.User{}, err
-	}
-
-	detail.Password = nil
-
-	return detail, nil
-}
-
 func (uc UseCase) AdminDeleteUser(ctx context.Context, id int) error {
 	if err := uc.user.Delete(ctx, id); err != nil {
 		return errors.New("user not found")
@@ -121,5 +79,74 @@ func (uc UseCase) GetByEmail(ctx context.Context, authHeader string) (entity.Use
 		return entity.User{}, err
 	}
 
-	return
+	return detail, nil
+}
+
+func (uc UseCase) GetByEmailWithLocation(ctx context.Context, authHeader, lang string) (user.UserWithLocation, error) {
+	tokenStr, err := uc.auth.IsValidToken(ctx, authHeader)
+	if err != nil {
+		return user.UserWithLocation{}, err
+	}
+	return uc.user.GetByEmailWithLocation(ctx, tokenStr.Id, lang)
+}
+
+func (uc UseCase) AdminUpdateUser(ctx context.Context, data user.Update, avatarUpdated bool, authHeader string) (entity.User, error) {
+	oldUser, err := uc.user.GetById(ctx, *data.Id)
+	if err != nil {
+		return entity.User{}, err
+	}
+
+	tokenDetail, err := uc.auth.IsValidToken(ctx, authHeader)
+	if err != nil {
+		return entity.User{}, err
+	}
+
+	if avatarUpdated && oldUser.Avatar != "" {
+		if err := uc.file.Delete(ctx, oldUser.Avatar); err != nil {
+			return entity.User{}, err
+		}
+	}
+
+	if data.Password != nil {
+		hashedPassword, err := uc.auth.HashPassword(*data.Password)
+		if err != nil {
+			return entity.User{}, err
+		}
+		data.Password = &hashedPassword
+	}
+
+	data.UpdatedAt = time.Now()
+
+	detail, err := uc.user.Update(ctx, data, tokenDetail.Id)
+
+	if err != nil {
+		return entity.User{}, err
+	}
+
+	detail.Password = nil
+
+	return detail, nil
+}
+
+func (uc UseCase) UpdateCabinet(ctx context.Context, data user.UpdateCabinet, authHeader string, avatarUpdated bool) (entity.User, error) {
+
+	token, err := uc.auth.IsValidToken(ctx, authHeader)
+	if err != nil {
+		return entity.User{}, err
+	}
+
+	oldUser, err := uc.user.GetById(ctx, token.Id)
+	if err != nil {
+		return entity.User{}, err
+	}
+
+	if avatarUpdated && oldUser.Avatar != "" {
+		if err := uc.file.Delete(ctx, oldUser.Avatar); err != nil {
+			return entity.User{}, err
+		}
+	}
+
+	detail, err := uc.user.UpdateCabinet(ctx, data, token.Id)
+
+	return detail, err
 }

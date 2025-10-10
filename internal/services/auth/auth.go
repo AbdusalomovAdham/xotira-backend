@@ -26,8 +26,7 @@ func (as *Service) GenerateToken(ctx context.Context, data GenerateToken) (strin
 	token := jwt.New(jwt.SigningMethodHS512)
 
 	claims := token.Claims.(jwt.MapClaims)
-	claims["exp"] = time.Now().Add(12 * time.Hour).Unix()
-	claims["email"] = data.Email
+	claims["exp"] = time.Now().Add(24 * time.Hour).Unix()
 	claims["role"] = data.Role
 	claims["id"] = data.Id
 
@@ -53,7 +52,7 @@ func (as *Service) IsValidToken(ctx context.Context, tokenStr string) (entity.Us
 		return entity.User{}, errors.New("invalid token")
 	}
 
-	userDetail, err := as.user.GetByEmail(ctx, claims.Email)
+	userDetail, err := as.user.GetById(ctx, claims.ID)
 	if err != nil {
 		return entity.User{}, errors.New("user not found")
 	}

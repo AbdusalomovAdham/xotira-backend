@@ -22,9 +22,8 @@ type ForgotPsw struct {
 	Email string
 }
 type GenerateToken struct {
-	Id    int
-	Email string
-	Role  int
+	Id   int
+	Role int
 }
 
 type CheckCode struct {
@@ -47,6 +46,7 @@ type ResendCode struct {
 }
 
 type Claims struct {
+	ID    int
 	Email string
 	Role  int
 	jwt.RegisteredClaims

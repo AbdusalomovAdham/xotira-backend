@@ -6,5 +6,5 @@ import (
 )
 
 type User interface {
-	GetByEmail(ctx context.Context, email string) (entity.User, error)
+	GetById(ctx context.Context, id int) (entity.User, error)
 }

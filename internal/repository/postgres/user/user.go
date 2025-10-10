@@ -2,7 +2,6 @@ package user
 
 import (
 	"context"
-	"fmt"
 	"main/internal/entity"
 	"main/internal/services/user"
 	"time"
@@ -111,7 +110,6 @@ func (r Repository) GetAll(ctx context.Context, filter user.Filter, order string
 		q.Order("id desc")
 	}
 	count, err := q.ScanAndCount(ctx)
-	fmt.Println("user list", count)
 	return list, count, err
 }
 
@@ -126,4 +124,82 @@ func (r Repository) GetById(ctx context.Context, id int) (entity.User, error) {
 func (r Repository) Delete(ctx context.Context, id int) error {
 	_, err := r.NewDelete().Table("users").Where("id = ?", id).Exec(ctx)
 	return err
+}
+
+func (r *Repository) GetByEmailWithLocation(ctx context.Context, id int, lang string) (user.UserWithLocation, error) {
+	var result user.UserWithLocation
+	var u entity.User
+	err := r.NewSelect().Model(&u).Where("id = ?", id).Scan(ctx)
+	if err != nil {
+		return result, err
+	}
+
+	result.FullName = u.FullName
+	result.Email = u.Email
+	result.Avatar = u.Avatar
+	result.Role = u.Role
+
+	var regionName string
+	err = r.NewSelect().
+		Table("regions").
+		ColumnExpr("name ->> ?", lang).
+		Where("id = ?", u.RegionId).
+		Scan(ctx, &regionName)
+	if err == nil {
+		result.RegionName = regionName
+	}
+
+	var districtName string
+	err = r.NewSelect().
+		Table("districts").
+		ColumnExpr("name ->> ?", lang).
+		Where("id = ?", u.DistrictId).
+		Scan(ctx, &districtName)
+	if err == nil {
+		result.DistrictName = districtName
+	}
+	return result, nil
+}
+
+func (r *Repository) UpdateCabinet(ctx context.Context, data user.UpdateCabinet, id int) (entity.User, error) {
+	var detail entity.User
+
+	err := r.NewSelect().Model(&detail).Where("id = ?", id).Scan(ctx)
+
+	if err != nil {
+		return entity.User{}, err
+	}
+
+	if data.Email != nil {
+		detail.Email = *data.Email
+	}
+
+	if data.RegionId != nil {
+		detail.RegionId = *data.RegionId
+	}
+
+	if data.DistrictId != nil {
+		detail.DistrictId = *data.DistrictId
+	}
+
+	if data.Fullname != nil {
+		detail.FullName = *data.Fullname
+	}
+
+	if data.Avatar != nil {
+		detail.Avatar = *data.Avatar
+	}
+
+	detail.UpdatedAt = time.Now()
+	detail.UpdatedBy = id
+
+	_, err = r.NewUpdate().Model(&detail).Where("id = ?", id).Exec(ctx)
+
+	if err != nil {
+		return entity.User{}, err
+	}
+
+	detail.Password = nil
+
+	return detail, nil
 }

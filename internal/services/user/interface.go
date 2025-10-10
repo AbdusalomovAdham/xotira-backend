@@ -12,4 +12,6 @@ type Repository interface {
 	GetAll(ctx context.Context, filer Filter, order string) ([]entity.User, int, error)
 	GetById(ctx context.Context, id int) (entity.User, error)
 	Delete(ctx context.Context, id int) error
+	GetByEmailWithLocation(ctx context.Context, id int, lang string) (UserWithLocation, error)
+	UpdateCabinet(ctx context.Context, data UpdateCabinet, id int) (entity.User, error)
 }
